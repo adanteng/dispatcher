@@ -1,5 +1,9 @@
 package dispatcher
 
+import (
+	"golang.org/x/net/context"
+)
+
 type Dispatcher struct {
 	inputQueue     chan interface{}
 	workerPool     chan chan interface{}
@@ -28,8 +32,20 @@ func (d *Dispatcher) StartWorkers() {
 	}()
 }
 
+// DEPRECATED: Use PublishM instead.
 func (d *Dispatcher) Publish(i interface{}) {
 	d.inputQueue <- i
+}
+
+// M contain ctx, you can put logid or something you want pass to executer
+type msg struct {
+	ctx  context.Context
+	data interface{}
+}
+
+func (d *Dispatcher) PublishM(c context.Context, dat interface{}) {
+	m := &msg{ctx: c, data: dat}
+	d.inputQueue <- m
 }
 
 type worker struct {
