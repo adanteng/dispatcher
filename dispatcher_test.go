@@ -97,9 +97,9 @@ type TestExecuter struct {
 }
 
 func (e *TestExecuter) Do(i interface{}) {
-	m, ok := i.(*msg)
+	m, ok := i.(*Msg)
 	if ok {
-		fmt.Println(m.data)
+		fmt.Println(m.Data)
 	} else {
 		fmt.Println(i)
 	}

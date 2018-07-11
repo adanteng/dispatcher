@@ -128,13 +128,14 @@ func (d *Dispatcher) Publish(i interface{}) {
 }
 
 // M contain ctx, you can put logid or something you want pass to executer
-type msg struct {
-	ctx  context.Context
-	data interface{}
+// used by app code, so must big letter.
+type Msg struct {
+	Ctx  context.Context
+	Data interface{}
 }
 
 func (d *Dispatcher) PublishM(c context.Context, dat interface{}) {
-	m := &msg{ctx: c, data: dat}
+	m := &Msg{Ctx: c, Data: dat}
 	d.inputQueue <- m
 }
 
