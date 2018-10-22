@@ -87,6 +87,31 @@ func Test_NewDispatcher(t *testing.T) {
 	wg.Wait()
 }
 
+func Test_NonBlockingPublish(t *testing.T) {
+	dpr, _ := New(
+		WithQueueSize(5),
+		WithWorkerCount(2),
+		WithExecuterBuilder(&testBuilder{}),
+	)
+
+	var wg sync.WaitGroup
+	ctx := context.Background()
+
+	for j := 1; j <= 5; j++ {
+		wg.Add(1)
+		go func(no int) {
+			for i := 1; i <= 5; i++ {
+				cctx := context.WithValue(ctx, i, i)
+				if err := dpr.NonBlockingPublish(cctx, fmt.Sprintf("with ctx3 %d-%d", no, i)); err != nil {
+					fmt.Println(err)
+				}
+			}
+			wg.Done()
+		}(j)
+	}
+	wg.Wait()
+}
+
 type testBuilder struct{}
 
 func (*testBuilder) Build() (Executer, error) {

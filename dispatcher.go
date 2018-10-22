@@ -139,6 +139,16 @@ func (d *Dispatcher) PublishM(c context.Context, dat interface{}) {
 	d.inputQueue <- m
 }
 
+func (d *Dispatcher) NonBlockingPublish(ctx context.Context, dat interface{}) error {
+	m := &Msg{Ctx: ctx, Data: dat}
+	select {
+	case d.inputQueue <- m:
+		return nil
+	default:
+		return fmt.Errorf("queue full err [%+v]", dat)
+	}
+}
+
 type worker struct {
 	// keep the ptr to Dispatcher
 	dptr      *Dispatcher
